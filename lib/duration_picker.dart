@@ -9,7 +9,8 @@ const double _kDurationPickerWidthPortrait = 328.0;
 const double _kDurationPickerWidthLandscape = 512.0;
 
 const double _kDurationPickerHeightPortrait = 380.0;
-const double _kDurationPickerHeightLandscape = 304.0;
+//PR  the height for landscape seemed too small, especially now the rendered size is smaller
+const double _kDurationPickerHeightLandscape = 380.0;
 
 const double _kTwoPi = 2 * math.pi; // 360 degrees in radians
 const double _kPiByTwo = math.pi / 2; // 90 degrees in radians
@@ -49,7 +50,8 @@ class DialPainter extends CustomPainter {
     const sweep = _kTwoPi - epsilon;
     const startAngle = -math.pi / 2.0;
 
-    final radius = size.shortestSide / 2.0;
+    //PR reduce radius to enclose the handle shape
+    final radius = (size.shortestSide / 2.0)-20;
     final center = Offset(size.width / 2.0, size.height / 2.0);
     final centerPoint = center;
 
@@ -82,7 +84,8 @@ class DialPainter extends CustomPainter {
 
     // Draw the handle that is used to drag and to indicate the position around the circle
     final handlePaint = Paint()..color = accentColor;
-    final handlePoint = getOffsetForTheta(theta, radius - 10.0);
+    //PR center the handle against new outer ring size
+    final handlePoint = getOffsetForTheta(theta, radius - 5.0);
     canvas.drawCircle(handlePoint, 20.0, handlePaint);
 
     // Get the appropriate base unit string
@@ -130,7 +133,9 @@ class DialPainter extends CustomPainter {
         style: Theme.of(context)
             .textTheme
             .displayMedium!
-            .copyWith(fontSize: size.shortestSide * 0.15),
+            //PR shrink font as circle is now smaller
+            .copyWith(fontSize: size.shortestSide * 0.10),
+
       ),
       textDirection: TextDirection.ltr,
     )..layout();
@@ -144,7 +149,8 @@ class DialPainter extends CustomPainter {
       textAlign: TextAlign.center,
       text: TextSpan(
         text: getBaseUnitString(), //th: ${theta}',
-        style: Theme.of(context).textTheme.bodyMedium,
+        //PR shrink font as its resized elsewhere
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: size.shortestSide * 0.10),
       ),
       textDirection: TextDirection.ltr,
     )..layout();
@@ -541,8 +547,9 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
     _center = null;
   }
 
-  List<TextPainter> _buildBaseUnitLabels(TextTheme textTheme) {
-    final style = textTheme.titleMedium;
+  //PR font scaling, but small fonts need  a different offset.
+  List<TextPainter> _buildBaseUnitLabels(TextTheme textTheme, Size size) {
+    final style = textTheme.titleMedium!.copyWith(fontSize: size.shortestSide * 0.05);
 
     var baseUnitMarkerValues = <Duration>[];
 
@@ -618,20 +625,23 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
       onPanUpdate: _handlePanUpdate,
       onPanEnd: _handlePanEnd,
       onTapUp: _handleTapUp,
-      child: CustomPaint(
-        painter: DialPainter(
-          baseUnitMultiplier: _secondaryUnitValue,
-          baseUnitHand: _baseUnitValue,
-          baseUnit: widget.baseUnit,
-          context: context,
-          selectedValue: selectedDialValue,
-          labels: _buildBaseUnitLabels(theme.textTheme),
-          backgroundColor: backgroundColor,
-          accentColor: themeData.colorScheme.secondary,
-          theta: _getThetaForDuration(widget.duration, widget.baseUnit),
-          textDirection: Directionality.of(context),
-        ),
-      ),
+      // PR for labels to scale,  constraints are acquired for build base unit labels
+      child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+        return CustomPaint(
+          painter: DialPainter(
+            baseUnitMultiplier: _secondaryUnitValue,
+            baseUnitHand: _baseUnitValue,
+            baseUnit: widget.baseUnit,
+            context: context,
+            selectedValue: selectedDialValue,
+            labels: _buildBaseUnitLabels(theme.textTheme,Size(constraints.maxWidth, constraints.maxHeight)),
+            backgroundColor: backgroundColor,
+            accentColor: themeData.colorScheme.secondary,
+            theta: _getThetaForDuration(widget.duration, widget.baseUnit),
+            textDirection: Directionality.of(context),
+          ),
+        );
+      }),
     );
   }
 }

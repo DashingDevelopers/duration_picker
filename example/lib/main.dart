@@ -40,19 +40,23 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Expanded(
-              child: DurationPicker(
-                duration: _duration,
-                baseUnit: BaseUnit.second,
-                onChange: (val) {
-                  setState(() => _duration = val);
-                },
-                // upperBound: const Duration(
-                //   seconds: 120,
-                // ),
-                // lowerBound: const Duration(
-                //   seconds: 5,
-                // ),
+            //PR added container  to show extent of gesture detector
+            Container(
+              color: Colors.blueGrey,
+              child: Expanded(
+                child: DurationPicker(
+                  duration: _duration,
+                  baseUnit: BaseUnit.second,
+                  onChange: (val) {
+                    setState(() => _duration = val);
+                  },
+                  // upperBound: const Duration(
+                  //   seconds: 120,
+                  // ),
+                  // lowerBound: const Duration(
+                  //   seconds: 5,
+                  // ),
+                ),
               ),
             ),
           ],
