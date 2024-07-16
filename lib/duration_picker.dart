@@ -132,9 +132,9 @@ class DialPainter extends CustomPainter {
         text: '$secondaryUnits$baseUnits',
         style: Theme.of(context)
             .textTheme
-            .displayMedium!
+            .bodyMedium!
             //PR shrink font as circle is now smaller
-            .copyWith(fontSize: size.shortestSide * 0.10),
+            .copyWith(fontSize: size.shortestSide * 0.08),
 
       ),
       textDirection: TextDirection.ltr,
@@ -150,7 +150,7 @@ class DialPainter extends CustomPainter {
       text: TextSpan(
         text: getBaseUnitString(), //th: ${theta}',
         //PR shrink font as its resized elsewhere
-        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: size.shortestSide * 0.10),
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: size.shortestSide * 0.06),
       ),
       textDirection: TextDirection.ltr,
     )..layout();
