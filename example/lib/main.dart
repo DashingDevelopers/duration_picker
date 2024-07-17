@@ -41,9 +41,9 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             //PR added container  to show extent of gesture detector
-            Container(
-              color: Colors.blueGrey,
-              child: Expanded(
+            Expanded(
+              child: Container(
+                color: Colors.blueGrey,
                 child: DurationPicker(
                   duration: _duration,
                   baseUnit: BaseUnit.second,

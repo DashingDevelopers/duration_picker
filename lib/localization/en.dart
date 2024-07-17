@@ -2,26 +2,26 @@ import 'package:duration_picker/localization/localization.dart';
 
 class DurationPickerLocalizationsEn extends DurationPickerLocalizations {
   @override
-  String get baseUnitHour => 'hr.';
+  String get baseUnitHour => 'h';
 
   @override
-  String get baseUnitMillisecond => 'ms.';
+  String get baseUnitMillisecond => 'ms';
 
   @override
-  String get baseUnitMinute => 'min.';
+  String get baseUnitMinute => 'm';
 
   @override
-  String get baseUnitSecond => 'sec.';
+  String get baseUnitSecond => 's';
 
   @override
-  String get secondaryUnitHour => 'd ';
+  String get secondaryUnitHour => 'd';
 
   @override
-  String get secondaryUnitMillisecond => 's ';
+  String get secondaryUnitMillisecond => 'ms';
 
   @override
-  String get secondaryUnitMinute => 'h ';
+  String get secondaryUnitMinute => 'h';
 
   @override
-  String get secondaryUnitSecond => 'm ';
+  String get secondaryUnitSecond => 'm';
 }

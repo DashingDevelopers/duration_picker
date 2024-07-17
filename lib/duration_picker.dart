@@ -126,15 +126,16 @@ class DialPainter extends CustomPainter {
         : '$baseUnitMultiplier${getSecondaryUnitString()} ';
     final baseUnits = '$baseUnitHand';
 
+    print ('$secondaryUnits$baseUnits');
     final textDurationValuePainter = TextPainter(
       textAlign: TextAlign.center,
       text: TextSpan(
-        text: '$secondaryUnits$baseUnits',
+        text: '$secondaryUnits$baseUnits'+getBaseUnitString(),
         style: Theme.of(context)
             .textTheme
             .bodyMedium!
             //PR shrink font as circle is now smaller
-            .copyWith(fontSize: size.shortestSide * 0.08),
+            .copyWith(fontSize: size.shortestSide * 0.07),
 
       ),
       textDirection: TextDirection.ltr,
@@ -145,24 +146,24 @@ class DialPainter extends CustomPainter {
     );
     textDurationValuePainter.paint(canvas, middleForValueText);
 
-    final textMinPainter = TextPainter(
-      textAlign: TextAlign.center,
-      text: TextSpan(
-        text: getBaseUnitString(), //th: ${theta}',
-        //PR shrink font as its resized elsewhere
-        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: size.shortestSide * 0.06),
-      ),
-      textDirection: TextDirection.ltr,
-    )..layout();
-    textMinPainter.paint(
-      canvas,
-      Offset(
-        centerPoint.dx - (textMinPainter.width / 2),
-        centerPoint.dy +
-            (textDurationValuePainter.height / 2) -
-            textMinPainter.height / 2,
-      ),
-    );
+    // final textMinPainter = TextPainter(
+    //   textAlign: TextAlign.center,
+    //   text: TextSpan(
+    //     text: getBaseUnitString(), //th: ${theta}',
+    //     //PR shrink font as its resized elsewhere
+    //     style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: size.shortestSide * 0.06),
+    //   ),
+    //   textDirection: TextDirection.ltr,
+    // )..layout();
+    // textMinPainter.paint(
+    //   canvas,
+    //   Offset(
+    //     centerPoint.dx - (textMinPainter.width / 2),
+    //     centerPoint.dy +
+    //         (textDurationValuePainter.height / 2) -
+    //         textMinPainter.height / 2,
+    //   ),
+    // );
 
     // Draw an arc around the circle for the amount of the circle that has elapsed.
     final elapsedPainter = Paint()
@@ -193,7 +194,7 @@ class DialPainter extends CustomPainter {
 
         label.paint(
           canvas,
-          getOffsetForTheta(labelTheta, radius - 40.0) + labelOffset,
+          getOffsetForTheta(labelTheta, radius *.7) + labelOffset,
         );
 
         labelTheta += labelThetaIncrement;
