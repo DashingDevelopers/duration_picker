@@ -66,6 +66,8 @@ class _MyHomePageState extends State<MyHomePage> {
         builder: (BuildContext context) => FloatingActionButton(
           onPressed: () async {
             final resultingDuration = await showDurationPicker(
+              title: 'Pick Duration',
+
               context: context,
               initialTime: const Duration(seconds: 30),
               baseUnit: BaseUnit.second,
