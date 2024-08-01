@@ -648,6 +648,7 @@ class DurationPickerDialog extends StatefulWidget {
     this.upperBound,
     this.lowerBound,
     this.title,
+    this.screenScaling=1.0,
   }) : super(key: key);
 
   /// The duration initially selected when the dialog is shown.
@@ -657,6 +658,7 @@ class DurationPickerDialog extends StatefulWidget {
   final Duration? upperBound;
   final Duration? lowerBound;
   final String? title;
+  final double screenScaling;
 
   @override
   DurationPickerDialogState createState() => DurationPickerDialogState();
@@ -696,7 +698,7 @@ class DurationPickerDialogState extends State<DurationPickerDialog> {
 
   @override
   Widget build(BuildContext context) {
-    print ('hi2');
+    print ('hi4');
 
     assert(debugCheckHasMediaQuery(context));
     final theme = Theme.of(context);
@@ -754,10 +756,13 @@ class DurationPickerDialogState extends State<DurationPickerDialog> {
           );
 
           switch (orientation) {
-            case Orientation.portrait:
-              return SizedBox(
-                width: _kDurationPickerWidthPortrait,
-                height: _kDurationPickerHeightPortrait,
+
+          case Orientation.portrait:
+            print('portrait $_kDurationPickerWidthPortrait x $_kDurationPickerHeightPortrait screenScaling ${widget.screenScaling}');
+
+            return SizedBox(
+                width: _kDurationPickerWidthPortrait * widget.screenScaling,
+                height: _kDurationPickerHeightPortrait * widget.screenScaling,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -770,10 +775,10 @@ class DurationPickerDialogState extends State<DurationPickerDialog> {
                 ),
               );
             case Orientation.landscape:
-              print('landscape $_kDurationPickerHeightLandscape');
+              print('landscape $_kDurationPickerWidthLandscape x $_kDurationPickerHeightLandscape screenScaling ${widget.screenScaling}');
               return SizedBox(
-               width: _kDurationPickerWidthLandscape,
-               height: _kDurationPickerHeightLandscape,
+               width: _kDurationPickerWidthLandscape * widget.screenScaling,
+               height: _kDurationPickerHeightLandscape * widget.screenScaling,
                child: Row(
                  mainAxisSize: MainAxisSize.min,
                  crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -826,6 +831,8 @@ Future<Duration?> showDurationPicker({
   BoxDecoration? decoration,
   Duration? upperBound,
   Duration? lowerBound,
+  double screenScaling=1.0,
+
 }) async {
   return showDialog<Duration>(
     context: context,
@@ -836,6 +843,7 @@ Future<Duration?> showDurationPicker({
       decoration: decoration,
       upperBound: upperBound,
       lowerBound: lowerBound,
+      screenScaling: screenScaling,
     ),
   );
 }
