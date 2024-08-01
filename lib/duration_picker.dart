@@ -132,7 +132,7 @@ class DialPainter extends CustomPainter {
             .textTheme
             .bodyMedium!
             //PR shrink font as circle is now smaller
-            .copyWith(fontSize: size.shortestSide * 0.07),
+            .copyWith(fontSize: size.shortestSide * 0.07*MediaQuery.of(context).textScaleFactor),
       ),
       textDirection: TextDirection.ltr,
     )..layout();
@@ -186,7 +186,7 @@ class DialPainter extends CustomPainter {
       var labelTheta = _kPiByTwo;
 
       for (final label in labels) {
-        final labelOffset = Offset(-label.width / 2.0, -label.height / 2.0);
+        final labelOffset = Offset(-label.width/MediaQuery.of(context).textScaleFactor / 2.0, -label.height/MediaQuery.of(context).textScaleFactor / 2.0);
 
         label.paint(
           canvas,
@@ -534,8 +534,8 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
 
   //PR font scaling, but small fonts need  a different offset.
   List<TextPainter> _buildBaseUnitLabels(TextTheme textTheme, Size size) {
-    final style = textTheme.titleMedium!.copyWith(fontSize: size.shortestSide * 0.05);
-
+    final style = textTheme.titleMedium!.copyWith(fontSize: size.shortestSide * 0.05 *MediaQuery.of(context).textScaleFactor);
+    // fontSize: size.shortestSide * 0.07
     var baseUnitMarkerValues = <Duration>[];
 
     switch (widget.baseUnit) {
@@ -696,6 +696,8 @@ class DurationPickerDialogState extends State<DurationPickerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    print ('hi2');
+
     assert(debugCheckHasMediaQuery(context));
     final theme = Theme.of(context);
     final boxDecoration = widget.decoration ?? BoxDecoration(color: theme.dialogBackgroundColor);
@@ -811,10 +813,12 @@ class DurationPickerDialogState extends State<DurationPickerDialog> {
 /// ```dart
 /// showDurationPicker(
 ///   initialTime: new Duration.now(),
+///   
 ///   context: context,
 /// );
 /// ```
 Future<Duration?> showDurationPicker({
+
   required BuildContext context,
   required Duration initialTime,
   String? title,
