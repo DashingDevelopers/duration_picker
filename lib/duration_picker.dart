@@ -123,7 +123,7 @@ class DialPainter extends CustomPainter {
     final secondaryUnits = (baseUnitMultiplier == 0) ? '' : '$baseUnitMultiplier${getSecondaryUnitString()} ';
     final baseUnits = '$baseUnitHand';
 
-    print('$secondaryUnits$baseUnits');
+    // print('$secondaryUnits$baseUnits');
     final textDurationValuePainter = TextPainter(
       textAlign: TextAlign.center,
       text: TextSpan(
@@ -132,7 +132,7 @@ class DialPainter extends CustomPainter {
             .textTheme
             .bodyMedium!
             //PR shrink font as circle is now smaller
-            .copyWith(fontSize: size.shortestSide * 0.07*MediaQuery.of(context).textScaleFactor),
+            .copyWith(fontSize: size.shortestSide * 0.07 * MediaQuery.of(context).textScaleFactor),
       ),
       textDirection: TextDirection.ltr,
     )..layout();
@@ -186,7 +186,8 @@ class DialPainter extends CustomPainter {
       var labelTheta = _kPiByTwo;
 
       for (final label in labels) {
-        final labelOffset = Offset(-label.width/MediaQuery.of(context).textScaleFactor / 2.0, -label.height/MediaQuery.of(context).textScaleFactor / 2.0);
+        final labelOffset = Offset(-label.width / MediaQuery.of(context).textScaleFactor / 2.0,
+            -label.height / MediaQuery.of(context).textScaleFactor / 2.0);
 
         label.paint(
           canvas,
@@ -210,12 +211,15 @@ class DialPainter extends CustomPainter {
 }
 
 class _Dial extends StatefulWidget {
+  final Function? onChangeCallback;
+
   const _Dial({
     required this.duration,
     required this.onChanged,
     this.baseUnit = BaseUnit.minute,
     this.upperBound,
     this.lowerBound,
+    this.onChangeCallback,
   });
 
   final Duration duration;
@@ -371,6 +375,7 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
   }
 
   Duration _notifyOnChangedIfNeeded() {
+    // if (widget.onChangeCallback != null) widget.onChangeCallback!();
     _secondaryUnitValue = _secondaryUnitHand();
     _baseUnitValue = _baseUnitHand();
     final d = _angleToDuration(_turningAngle);
@@ -534,7 +539,8 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
 
   //PR font scaling, but small fonts need  a different offset.
   List<TextPainter> _buildBaseUnitLabels(TextTheme textTheme, Size size) {
-    final style = textTheme.titleMedium!.copyWith(fontSize: size.shortestSide * 0.05 *MediaQuery.of(context).textScaleFactor);
+    final style =
+        textTheme.titleMedium!.copyWith(fontSize: size.shortestSide * 0.05 * MediaQuery.of(context).textScaleFactor);
     // fontSize: size.shortestSide * 0.07
     var baseUnitMarkerValues = <Duration>[];
 
@@ -637,6 +643,7 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
 /// taps the "CANCEL" button. The selected time is reported by calling
 /// [Navigator.pop].
 class DurationPickerDialog extends StatefulWidget {
+final  Function? onChangeCallback;
   /// Creates a duration picker.
   ///
   /// [initialTime] must not be null.
@@ -648,7 +655,8 @@ class DurationPickerDialog extends StatefulWidget {
     this.upperBound,
     this.lowerBound,
     this.title,
-    this.screenScaling=1.0,
+    this.screenScaling = 1.0,
+    required this.onChangeCallback,
   }) : super(key: key);
 
   /// The duration initially selected when the dialog is shown.
@@ -682,11 +690,20 @@ class DurationPickerDialogState extends State<DurationPickerDialog> {
 
   late MaterialLocalizations localizations;
 
-  void _handleTimeChanged(Duration value) {
-    setState(() {
-      _selectedDuration = value;
-    });
-  }
+void _handleTimeChanged(Duration value) {
+  setState(() {
+    _selectedDuration = value;
+    if (widget.onChangeCallback != null) {
+      try {
+        widget.onChangeCallback!(value);
+      } catch (e) {
+        print('Error in onChangeCallback: $e');
+      }
+    } else {
+      print('onChangeCallback is null');
+    }
+  });
+}
 
   void _handleCancel() {
     Navigator.pop(context);
@@ -698,7 +715,7 @@ class DurationPickerDialogState extends State<DurationPickerDialog> {
 
   @override
   Widget build(BuildContext context) {
-    print ('hi4');
+    // print ('hi4');
 
     assert(debugCheckHasMediaQuery(context));
     final theme = Theme.of(context);
@@ -706,11 +723,10 @@ class DurationPickerDialogState extends State<DurationPickerDialog> {
     final Widget picker = Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
-        children: [if (widget.title!=null)
-          Text(widget.title!, style: theme.textTheme.headlineSmall),
+        children: [
+          if (widget.title != null) Text(widget.title!, style: theme.textTheme.headlineSmall),
           Expanded(
             child: AspectRatio(
-
               aspectRatio: 1.0,
               child: _Dial(
                 duration: _selectedDuration!,
@@ -756,11 +772,10 @@ class DurationPickerDialogState extends State<DurationPickerDialog> {
           );
 
           switch (orientation) {
+            case Orientation.portrait:
+              // print('portrait $_kDurationPickerWidthPortrait x $_kDurationPickerHeightPortrait screenScaling ${widget.screenScaling}');
 
-          case Orientation.portrait:
-            print('portrait $_kDurationPickerWidthPortrait x $_kDurationPickerHeightPortrait screenScaling ${widget.screenScaling}');
-
-            return SizedBox(
+              return SizedBox(
                 width: _kDurationPickerWidthPortrait * widget.screenScaling,
                 height: _kDurationPickerHeightPortrait * widget.screenScaling,
                 child: Column(
@@ -775,20 +790,20 @@ class DurationPickerDialogState extends State<DurationPickerDialog> {
                 ),
               );
             case Orientation.landscape:
-              print('landscape $_kDurationPickerWidthLandscape x $_kDurationPickerHeightLandscape screenScaling ${widget.screenScaling}');
+              // print('landscape $_kDurationPickerWidthLandscape x $_kDurationPickerHeightLandscape screenScaling ${widget.screenScaling}');
               return SizedBox(
-               width: _kDurationPickerWidthLandscape * widget.screenScaling,
-               height: _kDurationPickerHeightLandscape * widget.screenScaling,
-               child: Row(
-                 mainAxisSize: MainAxisSize.min,
-                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                 children: <Widget>[
-                   Flexible(
-                     child: pickerAndActions,
-                   ),
-                 ],
-               ),
-                                );
+                width: _kDurationPickerWidthLandscape * widget.screenScaling,
+                height: _kDurationPickerHeightLandscape * widget.screenScaling,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Flexible(
+                      child: pickerAndActions,
+                    ),
+                  ],
+                ),
+              );
           }
         },
       ),
@@ -818,12 +833,11 @@ class DurationPickerDialogState extends State<DurationPickerDialog> {
 /// ```dart
 /// showDurationPicker(
 ///   initialTime: new Duration.now(),
-///   
+///
 ///   context: context,
 /// );
 /// ```
 Future<Duration?> showDurationPicker({
-
   required BuildContext context,
   required Duration initialTime,
   String? title,
@@ -831,20 +845,20 @@ Future<Duration?> showDurationPicker({
   BoxDecoration? decoration,
   Duration? upperBound,
   Duration? lowerBound,
-  double screenScaling=1.0,
-
+  double screenScaling = 1.0,
+ Function? onChangeCallback,
 }) async {
   return showDialog<Duration>(
     context: context,
     builder: (BuildContext context) => DurationPickerDialog(
-      title: title,
-      initialTime: initialTime,
-      baseUnit: baseUnit,
-      decoration: decoration,
-      upperBound: upperBound,
-      lowerBound: lowerBound,
-      screenScaling: screenScaling,
-    ),
+        title: title,
+        initialTime: initialTime,
+        baseUnit: baseUnit,
+        decoration: decoration,
+        upperBound: upperBound,
+        lowerBound: lowerBound,
+        screenScaling: screenScaling,
+        onChangeCallback: onChangeCallback),
   );
 }
 

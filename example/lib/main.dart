@@ -47,6 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: DurationPicker(
                   duration: _duration,
                   baseUnit: BaseUnit.second,
+
                   onChange: (val) {
                     setState(() => _duration = val);
                   },
@@ -67,12 +68,17 @@ class _MyHomePageState extends State<MyHomePage> {
           onPressed: () async {
             final resultingDuration = await showDurationPicker(
               title: 'Pick Duration',
-
               context: context,
               initialTime: const Duration(seconds: 30),
               baseUnit: BaseUnit.second,
               upperBound: const Duration(seconds: 60),
               lowerBound: const Duration(seconds: 10),
+              screenScaling: 1.5,//largeText
+              onChangeCallback: (Duration val) {
+                print('onChangeCallback: $val');
+              },
+
+
             );
             if (!context.mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
