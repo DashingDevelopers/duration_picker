@@ -1,3 +1,4 @@
+import 'package:duration_picker/base_unit.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +29,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Duration _duration = const Duration(seconds: 60);
+  Duration _durationMillisClock = const Duration(milliseconds: 1000);
+  Duration _durationSecondsClock = const Duration(seconds: 60);
+  Duration _durationMinutesClock = const Duration(minutes: 60);
+  Duration _durationHoursClock = const Duration(hours: 24);
 
   @override
   Widget build(BuildContext context) {
@@ -43,13 +47,13 @@ class _MyHomePageState extends State<MyHomePage> {
             //PR added container  to show extent of gesture detector
             Expanded(
               child: Container(
-                color: Colors.blueGrey,
+                color: Colors.purple,
                 child: DurationPicker(
-                  duration: _duration,
-                  baseUnit: BaseUnit.second,
+                  duration: _durationMillisClock,
+                  baseUnit: BaseUnit.millisecond,
 
                   onChange: (val) {
-                    setState(() => _duration = val);
+                    setState(() => _durationMillisClock = val);
                   },
                   // upperBound: const Duration(
                   //   seconds: 120,
@@ -57,6 +61,63 @@ class _MyHomePageState extends State<MyHomePage> {
                   // lowerBound: const Duration(
                   //   seconds: 5,
                   // ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                color: Colors.blueGrey,
+                child: DurationPicker(
+                  duration: _durationSecondsClock,
+                  baseUnit: BaseUnit.second,
+
+                  onChange: (val) {
+                    setState(() => _durationSecondsClock = val);
+                  },
+                  // upperBound: const Duration(
+                  //   seconds: 120,
+                  // ),
+                  // lowerBound: const Duration(
+                  //   seconds: 5,
+                  // ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                color: Colors.green,
+                child: DurationPicker(
+                  duration: _durationMinutesClock,
+                  baseUnit: BaseUnit.minute,
+
+                  onChange: (val) {
+                    setState(() => _durationMinutesClock = val);
+                  },
+                  // upperBound: const Duration(
+                  //   seconds: 120,
+                  // ),
+                  // lowerBound: const Duration(
+                  //   seconds: 5,
+                  // ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                color: Colors.deepOrangeAccent,
+                child: DurationPicker(
+                  duration: _durationHoursClock,
+                  baseUnit: BaseUnit.hour,
+
+                  onChange: (val) {
+                    setState(() => _durationHoursClock = val);
+                  },
+                  upperBound: const Duration(
+                    days: 2,
+                  ),
+                  lowerBound: const Duration(
+                    days: 0,
+                  ),
                 ),
               ),
             ),
