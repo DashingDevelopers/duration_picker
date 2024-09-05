@@ -1,6 +1,7 @@
 import 'package:duration_picker/base_unit.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() => runApp(const MyApp());
 
@@ -9,10 +10,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<DeviceOrientation> orientations = <DeviceOrientation>[];
+
+    orientations.addAll(<DeviceOrientation>[
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    SystemChrome.setPreferredOrientations(orientations);
+
     return MaterialApp(
       title: 'Duration Picker Demo',
+      showSemanticsDebugger: true,
       theme: ThemeData(
         primarySwatch: Colors.blue,
+
       ),
       home: const MyHomePage(title: 'Duration Picker Demo'),
     );

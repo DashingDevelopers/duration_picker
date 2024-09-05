@@ -34,6 +34,7 @@ class DurationPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+      print('DurationPicker build');
     return SizedBox(
       width: width ?? kDurationPickerWidthPortrait / 1.5,
       height: height ?? kDurationPickerHeightPortrait / 1.5,

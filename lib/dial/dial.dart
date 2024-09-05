@@ -372,15 +372,18 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
     Timer? _debounceTimer;
 
     return Semantics(
-      liveRegion: false,
-      label: textHelper.durationString,
+      liveRegion: true,
+      // label: 'test',//textHelper.durationString,
+      value: 'value',
+      slider: false,
+      excludeSemantics: true,
       onIncrease: () {
         final newDuration = widget.duration + widget.baseUnitDenomination.singleUnitDuration;
 
         if (widget.upperBound != null && newDuration > widget.upperBound!){
           final houv = widget.baseUnitDenomination.higherOrderUnitHand(widget.upperBound!);
           final bov = widget.baseUnitDenomination.baseUnitHand(widget.upperBound!);
-          SemanticsService.announce('Cannot increase beyond ${textHelper.getDurationString(houv, bov)}', Directionality.of(context));
+          // SemanticsService.announce('Cannot increase beyond ${textHelper.getDurationString(houv, bov)}', Directionality.of(context));
 
           return;}
 
@@ -388,8 +391,10 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
         final houv = widget.baseUnitDenomination.higherOrderUnitHand(newDuration);
         final bov = widget.baseUnitDenomination.baseUnitHand(newDuration);
 
-        SemanticsService.announce(textHelper.getDurationString(houv, bov), Directionality.of(context));
+        // SemanticsService.announce(textHelper.getDurationString(houv, bov), Directionality.of(context));
       },
+      increasedValue: 'Increased',
+      decreasedValue: 'Decreased',
       onDecrease: () {
         final newDuration = widget.duration - widget.baseUnitDenomination.singleUnitDuration;
 
@@ -407,30 +412,32 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
 
         SemanticsService.announce(textHelper.getDurationString(houv, bov), Directionality.of(context));
       },
-      child: GestureDetector(
-        excludeFromSemantics: true,
-        onPanStart: _handlePanStart,
-        onPanUpdate: _handlePanUpdate,
-        onPanEnd: _handlePanEnd,
-        onTapUp: _handleTapUp,
-        // PR for labels to scale,  constraints are acquired for build base unit labels
-        child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
-          return CustomPaint(
-            painter: DialPainter(
-              baseUnitMultiplier: _higherOrderUnitValue,
-              baseUnitHand: _baseUnitValue,
-              baseUnit: widget.baseUnitDenomination,
-              context: context,
-              // selectedValue: selectedDialValue,
-              labels: _buildBaseUnitLabels(theme.textTheme, Size(constraints.maxWidth, constraints.maxHeight)),
-              backgroundColor: backgroundColor,
-              accentColor: themeData.colorScheme.secondary,
-              theta: _getThetaForDuration(widget.duration, widget.baseUnitDenomination),
-              textDirection: Directionality.of(context),
-              textHelper: textHelper,
-            ),
-          );
-        }),
+      child: ExcludeSemantics(
+        child: GestureDetector(
+          excludeFromSemantics: true,
+          onPanStart: _handlePanStart,
+          onPanUpdate: _handlePanUpdate,
+          onPanEnd: _handlePanEnd,
+          onTapUp: _handleTapUp,
+          // PR for labels to scale,  constraints are acquired for build base unit labels
+          child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+            return CustomPaint(
+              painter: DialPainter(
+                baseUnitMultiplier: _higherOrderUnitValue,
+                baseUnitHand: _baseUnitValue,
+                baseUnit: widget.baseUnitDenomination,
+                context: context,
+                // selectedValue: selectedDialValue,
+                labels: _buildBaseUnitLabels(theme.textTheme, Size(constraints.maxWidth, constraints.maxHeight)),
+                backgroundColor: backgroundColor,
+                accentColor: themeData.colorScheme.secondary,
+                theta: _getThetaForDuration(widget.duration, widget.baseUnitDenomination),
+                textDirection: Directionality.of(context),
+                textHelper: textHelper,
+              ),
+            );
+          }),
+        ),
       ),
     );
   }
