@@ -4,6 +4,7 @@ import 'package:duration_picker/base_unit.dart';
 import 'package:duration_picker/constants.dart';
 import 'package:duration_picker/dial/dial.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 
 
@@ -27,7 +28,7 @@ final  Function? onChangeCallback;
     this.decoration,
     this.upperBound,
     this.lowerBound,
-    this.title,
+    this.title='Duration',
     this.screenScaling = 1.0,
     required this.onChangeCallback,
   }) : super(key: key);
@@ -38,7 +39,7 @@ final  Function? onChangeCallback;
   final BoxDecoration? decoration;
   final Duration? upperBound;
   final Duration? lowerBound;
-  final String? title;
+  final String title;
   final double screenScaling;
 
   @override
@@ -50,6 +51,7 @@ class DurationPickerDialogState extends State<DurationPickerDialog> {
   void initState() {
     super.initState();
     _selectedDuration = widget.initialTime;
+
   }
 
   @override
@@ -88,7 +90,6 @@ void _handleTimeChanged(Duration value) {
 
   @override
   Widget build(BuildContext context) {
-    // print ('hi4');
 
     assert(debugCheckHasMediaQuery(context));
     final theme = Theme.of(context);
@@ -97,27 +98,17 @@ void _handleTimeChanged(Duration value) {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          if (widget.title != null) Text(widget.title!, style: theme.textTheme.headlineSmall),
+          if (widget.title != null)
+            // Text(widget.title!, style: theme.textTheme.headlineSmall),
+             ExcludeSemantics(child: Text(widget.title!, style: theme.textTheme.headlineSmall)),
           Expanded(
             child: AspectRatio(
               aspectRatio: 1.0,
-              // child: Semantics(
-              //   onIncrease: () {
-              //     _handleTimeChanged(_selectedDuration! + const Duration(minutes: 1));
-              //   },
-              //   onDecrease: () {
-              //     _handleTimeChanged(_selectedDuration! - const Duration(minutes: 1));
-              //   },
-              //   child: Dial(
-              //     duration: _selectedDuration!,
-              //     onChanged: _handleTimeChanged,
-              //     baseUnit: widget.baseUnit,
-              //   ),
-              // ),
               child: Dial(
                 duration: _selectedDuration!,
                 onChanged: _handleTimeChanged,
                 baseUnitDenomination: widget.baseUnit,
+                title: widget.title,
               ),
             ),
           ),
@@ -226,7 +217,7 @@ void _handleTimeChanged(Duration value) {
 Future<Duration?> showDurationPicker({
   required BuildContext context,
   required Duration initialTime,
-  String? title,
+  String title='Duration',
   BaseUnit baseUnit = BaseUnit.minute,
   BoxDecoration? decoration,
   Duration? upperBound,

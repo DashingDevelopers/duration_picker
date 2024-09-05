@@ -1,4 +1,4 @@
-import 'dart:async';
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:duration_picker/base_unit.dart';
@@ -6,27 +6,28 @@ import 'package:duration_picker/constants.dart';
 import 'package:duration_picker/dial/painter.dart';
 import 'package:duration_picker/dial/text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter/semantics.dart';
 
 /// Use [DialPainter] to style the durationPicker to your style.
 
 class Dial extends StatefulWidget {
   final Function? onChangeCallback;
 
-  const Dial({
-    required this.duration,
-    required this.onChanged,
-    this.baseUnitDenomination = BaseUnit.minute,
-    this.upperBound,
-    this.lowerBound,
-    this.onChangeCallback,
-  });
+  const Dial(
+      {required this.duration,
+      required this.onChanged,
+      this.baseUnitDenomination = BaseUnit.minute,
+      this.upperBound,
+      this.lowerBound,
+      this.onChangeCallback,
+      required this.title});
 
   final Duration duration;
   final ValueChanged<Duration> onChanged;
   final BaseUnit baseUnitDenomination;
   final Duration? upperBound;
   final Duration? lowerBound;
+  final String title;
 
   @override
   DialState createState() => DialState();
@@ -369,76 +370,96 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
       baseUnitDenomination: widget.baseUnitDenomination,
     );
 
-    Timer? _debounceTimer;
+    return GestureDetector(
+      excludeFromSemantics: true,
+      onPanStart: _handlePanStart,
+      onPanUpdate: _handlePanUpdate,
+      onPanEnd: _handlePanEnd,
+      onTapUp: _handleTapUp,
+      // PR for labels to scale,  constraints are acquired for build base unit labels
+      child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+        final incValue = widget.duration + widget.baseUnitDenomination.singleUnitDuration;
 
-    return Semantics(
-      liveRegion: true,
-      // label: 'test',//textHelper.durationString,
-      value: 'value',
-      slider: false,
-      excludeSemantics: true,
-      onIncrease: () {
-        final newDuration = widget.duration + widget.baseUnitDenomination.singleUnitDuration;
+        late String incTalk;
+        final canIncrease = (widget.upperBound == null || incValue < widget.upperBound!);
 
-        if (widget.upperBound != null && newDuration > widget.upperBound!){
+        if (canIncrease) {
+          final houv = widget.baseUnitDenomination.higherOrderUnitHand(incValue);
+          final buv = widget.baseUnitDenomination.baseUnitHand(incValue);
+          incTalk = textHelper.getDurationString(houv, buv);
+        } else {
           final houv = widget.baseUnitDenomination.higherOrderUnitHand(widget.upperBound!);
-          final bov = widget.baseUnitDenomination.baseUnitHand(widget.upperBound!);
-          // SemanticsService.announce('Cannot increase beyond ${textHelper.getDurationString(houv, bov)}', Directionality.of(context));
+          final buv = widget.baseUnitDenomination.baseUnitHand(widget.upperBound!);
+          incTalk = 'Cannot increase beyond ${textHelper.getDurationString(houv, buv)}';
+        }
 
-          return;}
+        final decValue = widget.duration - widget.baseUnitDenomination.singleUnitDuration;
+        final canDecrease = widget.lowerBound == null || decValue > widget.lowerBound!;
+        late String decTalk;
 
-        widget.onChanged(newDuration);
-        final houv = widget.baseUnitDenomination.higherOrderUnitHand(newDuration);
-        final bov = widget.baseUnitDenomination.baseUnitHand(newDuration);
+        if (canDecrease) {
+          final houv = widget.baseUnitDenomination.higherOrderUnitHand(decValue);
+          final bov = widget.baseUnitDenomination.baseUnitHand(decValue);
+          decTalk = textHelper.getDurationString(houv, bov);
+        } else {
+          final houv = widget.baseUnitDenomination.higherOrderUnitHand(widget.lowerBound!);
+          final bov = widget.baseUnitDenomination.baseUnitHand(widget.lowerBound!);
+          decTalk = 'Cannot decrease beyond ${textHelper.getDurationString(houv, bov)}';
+        }
 
-        // SemanticsService.announce(textHelper.getDurationString(houv, bov), Directionality.of(context));
-      },
-      increasedValue: 'Increased',
-      decreasedValue: 'Decreased',
-      onDecrease: () {
-        final newDuration = widget.duration - widget.baseUnitDenomination.singleUnitDuration;
+        print('widget.title: ${widget.title} incTalk: $incTalk, decTalk: $decTalk');
 
-        if (widget.lowerBound != null && newDuration < widget.lowerBound!) {
-          final houv = widget.baseUnitDenomination.higherOrderUnitHand(widget.upperBound!);
-          final bov = widget.baseUnitDenomination.baseUnitHand(widget.upperBound!);
-          SemanticsService.announce('Cannot decrease beyond ${textHelper.getDurationString(houv, bov)}', Directionality.of(context));
+        bool useAnnounceStrategy = Platform.isIOS || Platform.isMacOS;
+        bool useValueStrategy = !useAnnounceStrategy;
 
+        late String? label;
+        late String? value;
+        if (useValueStrategy) {
+          label = '${widget.title!}';
+          value = textHelper.durationString;// value is announced on first build
+        } else {
+          label = '${widget.title!} ${textHelper.durationString}';
+          value = null;//'announce strategy';
+        }
 
-          return;}
-        widget.onChanged(newDuration);
-
-        final houv = widget.baseUnitDenomination.higherOrderUnitHand(newDuration);
-        final bov = widget.baseUnitDenomination.baseUnitHand(newDuration);
-
-        SemanticsService.announce(textHelper.getDurationString(houv, bov), Directionality.of(context));
-      },
-      child: ExcludeSemantics(
-        child: GestureDetector(
-          excludeFromSemantics: true,
-          onPanStart: _handlePanStart,
-          onPanUpdate: _handlePanUpdate,
-          onPanEnd: _handlePanEnd,
-          onTapUp: _handleTapUp,
-          // PR for labels to scale,  constraints are acquired for build base unit labels
-          child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
-            return CustomPaint(
-              painter: DialPainter(
-                baseUnitMultiplier: _higherOrderUnitValue,
-                baseUnitHand: _baseUnitValue,
-                baseUnit: widget.baseUnitDenomination,
-                context: context,
-                // selectedValue: selectedDialValue,
-                labels: _buildBaseUnitLabels(theme.textTheme, Size(constraints.maxWidth, constraints.maxHeight)),
-                backgroundColor: backgroundColor,
-                accentColor: themeData.colorScheme.secondary,
-                theta: _getThetaForDuration(widget.duration, widget.baseUnitDenomination),
-                textDirection: Directionality.of(context),
-                textHelper: textHelper,
+        return Semantics(
+            liveRegion: false,
+            label: label,
+            value: value,
+            increasedValue: useValueStrategy ? incTalk : null,
+            decreasedValue: useValueStrategy ? decTalk : null,
+            onIncrease: () {
+              if (canIncrease) {
+                widget.onChanged(incValue);
+                if (useAnnounceStrategy) SemanticsService.announce(incTalk, Directionality.of(context));
+              }
+            },
+            onDecrease: () {
+              if (canDecrease) widget.onChanged(decValue);
+              {
+                widget.onChanged(decValue);
+                if (useAnnounceStrategy) SemanticsService.announce(decTalk, Directionality.of(context));
+              }
+            },
+            child: Semantics(
+              excludeSemantics: true,
+              child: CustomPaint(
+                painter: DialPainter(
+                  baseUnitMultiplier: _higherOrderUnitValue,
+                  baseUnitHand: _baseUnitValue,
+                  baseUnit: widget.baseUnitDenomination,
+                  context: context,
+                  // selectedValue: selectedDialValue,
+                  labels: _buildBaseUnitLabels(theme.textTheme, Size(constraints.maxWidth, constraints.maxHeight)),
+                  backgroundColor: backgroundColor,
+                  accentColor: themeData.colorScheme.secondary,
+                  theta: _getThetaForDuration(widget.duration, widget.baseUnitDenomination),
+                  textDirection: Directionality.of(context),
+                  textHelper: textHelper,
+                ),
               ),
-            );
-          }),
-        ),
-      ),
+            ));
+      }),
     );
   }
 }

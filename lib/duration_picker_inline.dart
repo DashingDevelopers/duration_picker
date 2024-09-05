@@ -49,6 +49,7 @@ class DurationPicker extends StatelessWidget {
               baseUnitDenomination: baseUnit,
               upperBound: upperBound,
               lowerBound: lowerBound,
+              title: 'Duration',
             ),
           ),
         ],

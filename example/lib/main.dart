@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       title: 'Duration Picker Demo',
-      showSemanticsDebugger: true,
+      showSemanticsDebugger: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
 
@@ -141,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
         builder: (BuildContext context) => FloatingActionButton(
           onPressed: () async {
             final resultingDuration = await showDurationPicker(
-              title: 'Pick Duration',
+              title: 'Duration',
               context: context,
               initialTime: const Duration(seconds: 30),
               baseUnit: BaseUnit.second,
