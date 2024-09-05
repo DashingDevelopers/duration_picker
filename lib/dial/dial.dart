@@ -409,17 +409,18 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
 
         print('widget.title: ${widget.title} incTalk: $incTalk, decTalk: $decTalk');
 
-        bool useAnnounceStrategy = Platform.isIOS || Platform.isMacOS;
+        //TODO check if this is the correct strategy for MacOs,Linux & Windows
+        bool useAnnounceStrategy = Platform.isIOS;// || Platform.isMacOS; MacOS doesn't seem to care about sliders in general
         bool useValueStrategy = !useAnnounceStrategy;
 
         late String? label;
         late String? value;
         if (useValueStrategy) {
-          label = '${widget.title!}';
-          value = textHelper.durationString;// value is announced on first build
+          label = '${widget.title}';//Label is announced upon each change after the altered value, then the word slider: "{newValue} {label} slider"
+          value = textHelper.durationString;// value is announced on widget first build followed by label : "{value} {label} slider"
         } else {
-          label = '${widget.title!} ${textHelper.durationString}';
-          value = null;//'announce strategy';
+          label = '${widget.title} ${textHelper.durationString}';// label is announced on widget first build : "{label}"
+            value = null; //on each change the SemanticSercice.announce is used to announce the change (currently just the new value) : "{newValue}"
         }
 
         return Semantics(
