@@ -186,12 +186,14 @@ class DialPainter extends CustomPainter {
       var labelTheta = _kPiByTwo;
 
       for (final label in labels) {
-        final labelOffset = Offset(-label.width / MediaQuery.of(context).textScaleFactor / 2.0,
-            -label.height / MediaQuery.of(context).textScaleFactor / 2.0);
+        var widthDif = -label.width / 2.0;
+        var heightDif = -label.height / 2.0;
+
+        final labelOffset = Offset(widthDif, heightDif);
 
         label.paint(
           canvas,
-          getOffsetForTheta(labelTheta, radius * .7) + labelOffset,
+          getOffsetForTheta(labelTheta, radius * .72) + labelOffset,
         );
 
         labelTheta += labelThetaIncrement;
@@ -523,6 +525,7 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
   }
 
   void _handleTapUp(TapUpDetails details) {
+    print('hi');
     final box = context.findRenderObject() as RenderBox?;
     _position = box?.globalToLocal(details.globalPosition);
     _center = box?.size.center(Offset.zero);
@@ -643,7 +646,8 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
 /// taps the "CANCEL" button. The selected time is reported by calling
 /// [Navigator.pop].
 class DurationPickerDialog extends StatefulWidget {
-final  Function? onChangeCallback;
+  final Function? onChangeCallback;
+
   /// Creates a duration picker.
   ///
   /// [initialTime] must not be null.
@@ -690,20 +694,23 @@ class DurationPickerDialogState extends State<DurationPickerDialog> {
 
   late MaterialLocalizations localizations;
 
-void _handleTimeChanged(Duration value) {
-  setState(() {
-    _selectedDuration = value;
-    if (widget.onChangeCallback != null) {
-      try {
-        widget.onChangeCallback!(value);
-      } catch (e) {
-        print('Error in onChangeCallback: $e');
+  void _handleTimeChanged(Duration value) {
+    setState(() {
+      if (widget.onChangeCallback != null) {
+        try {
+          if (_selectedDuration != value) {
+            widget.onChangeCallback!(value);
+          }
+        } catch (e) {
+          print('Error in onChangeCallback: $e');
+        }
+        // } else {
+        //   print(''
+        //       ' onChangeCallback is null');
       }
-    } else {
-      print('onChangeCallback is null');
-    }
-  });
-}
+      _selectedDuration = value;
+    });
+  }
 
   void _handleCancel() {
     Navigator.pop(context);
@@ -846,7 +853,7 @@ Future<Duration?> showDurationPicker({
   Duration? upperBound,
   Duration? lowerBound,
   double screenScaling = 1.0,
- Function? onChangeCallback,
+  Function? onChangeCallback,
 }) async {
   return showDialog<Duration>(
     context: context,
