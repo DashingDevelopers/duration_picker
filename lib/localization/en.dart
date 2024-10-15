@@ -17,7 +17,7 @@ class DurationPickerLocalizationsEn extends DurationPickerLocalizations {
   String get secondaryUnitHour => 'd';
 
   @override
-  String get secondaryUnitMillisecond => 'ms';
+  String get secondaryUnitMillisecond => 's';
 
   @override
   String get secondaryUnitMinute => 'h';

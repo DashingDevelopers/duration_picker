@@ -1,5 +1,7 @@
+import 'package:duration_picker/base_unit.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() => runApp(const MyApp());
 
@@ -8,10 +10,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<DeviceOrientation> orientations = <DeviceOrientation>[];
+
+    orientations.addAll(<DeviceOrientation>[
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    SystemChrome.setPreferredOrientations(orientations);
+
     return MaterialApp(
       title: 'Duration Picker Demo',
+      showSemanticsDebugger: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
+
       ),
       home: const MyHomePage(title: 'Duration Picker Demo'),
     );
@@ -28,7 +42,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Duration _duration = const Duration(seconds: 60);
+  Duration _durationMillisClock = const Duration(milliseconds: 1000);
+  Duration _durationSecondsClock = const Duration(seconds: 60);
+  Duration _durationMinutesClock = const Duration(minutes: 60);
+  Duration _durationHoursClock = const Duration(hours: 24);
 
   @override
   Widget build(BuildContext context) {
@@ -43,13 +60,13 @@ class _MyHomePageState extends State<MyHomePage> {
             //PR added container  to show extent of gesture detector
             Expanded(
               child: Container(
-                color: Colors.blueGrey,
+                color: Colors.purple,
                 child: DurationPicker(
-                  duration: _duration,
-                  baseUnit: BaseUnit.second,
+                  duration: _durationMillisClock,
+                  baseUnit: BaseUnit.millisecond,
 
                   onChange: (val) {
-                    setState(() => _duration = val);
+                    setState(() => _durationMillisClock = val);
                   },
                   // upperBound: const Duration(
                   //   seconds: 120,
@@ -60,6 +77,63 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
+            Expanded(
+              child: Container(
+                color: Colors.blueGrey,
+                child: DurationPicker(
+                  duration: _durationSecondsClock,
+                  baseUnit: BaseUnit.second,
+
+                  onChange: (val) {
+                    setState(() => _durationSecondsClock = val);
+                  },
+                  // upperBound: const Duration(
+                  //   seconds: 120,
+                  // ),
+                  // lowerBound: const Duration(
+                  //   seconds: 5,
+                  // ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                color: Colors.green,
+                child: DurationPicker(
+                  duration: _durationMinutesClock,
+                  baseUnit: BaseUnit.minute,
+
+                  onChange: (val) {
+                    setState(() => _durationMinutesClock = val);
+                  },
+                  // upperBound: const Duration(
+                  //   seconds: 120,
+                  // ),
+                  // lowerBound: const Duration(
+                  //   seconds: 5,
+                  // ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                color: Colors.deepOrangeAccent,
+                child: DurationPicker(
+                  duration: _durationHoursClock,
+                  baseUnit: BaseUnit.hour,
+
+                  onChange: (val) {
+                    setState(() => _durationHoursClock = val);
+                  },
+                  upperBound: const Duration(
+                    days: 2,
+                  ),
+                  lowerBound: const Duration(
+                    days: 0,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -67,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
         builder: (BuildContext context) => FloatingActionButton(
           onPressed: () async {
             final resultingDuration = await showDurationPicker(
-              title: 'Pick Duration',
+              title: 'Duration',
               context: context,
               initialTime: const Duration(seconds: 30),
               baseUnit: BaseUnit.second,
