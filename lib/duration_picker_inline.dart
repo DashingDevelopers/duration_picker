@@ -1,11 +1,7 @@
-
 import 'package:duration_picker/base_unit.dart';
 import 'package:duration_picker/constants.dart';
 import 'package:duration_picker/dial/dial.dart';
 import 'package:flutter/material.dart';
-
-
-
 
 /// The [DurationPicker] widget.
 class DurationPicker extends StatelessWidget {
@@ -34,7 +30,7 @@ class DurationPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-      print('DurationPicker build');
+    // print('DurationPicker build');
     return SizedBox(
       width: width ?? kDurationPickerWidthPortrait / 1.5,
       height: height ?? kDurationPickerHeightPortrait / 1.5,
