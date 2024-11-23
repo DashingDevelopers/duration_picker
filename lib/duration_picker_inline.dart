@@ -16,6 +16,9 @@ class DurationPicker extends StatelessWidget {
   final double? width;
   final double? height;
 
+  final Color? backgroundColor;
+  final Color? accentColor;
+
   const DurationPicker({
     Key? key,
     this.duration = Duration.zero,
@@ -25,6 +28,8 @@ class DurationPicker extends StatelessWidget {
     this.lowerBound,
     this.width,
     this.height,
+    this.backgroundColor,
+    this.accentColor,
     @Deprecated('This value was never used') this.snapToMins,
   }) : super(key: key);
 
@@ -40,6 +45,8 @@ class DurationPicker extends StatelessWidget {
         children: <Widget>[
           Expanded(
             child: Dial(
+              backgroundColor: backgroundColor,
+              accentColor: accentColor,
               duration: duration,
               onChanged: onChange,
               baseUnitDenomination: baseUnit,

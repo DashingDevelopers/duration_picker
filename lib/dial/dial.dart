@@ -14,6 +14,10 @@ import 'package:flutter/semantics.dart';
 class Dial extends StatefulWidget {
   final Function? onChangeCallback;
 
+  final Color? backgroundColor;
+
+  final Color? accentColor;
+
   const Dial(
       {required this.duration,
       required this.onChanged,
@@ -21,6 +25,8 @@ class Dial extends StatefulWidget {
       this.upperBound,
       this.lowerBound,
       this.onChangeCallback,
+      this.backgroundColor,
+      this.accentColor,
       required this.title});
 
   final Duration duration;
@@ -348,14 +354,18 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    Color? backgroundColor;
-    switch (themeData.brightness) {
-      case Brightness.light:
-        backgroundColor = Colors.grey[200];
-        break;
-      case Brightness.dark:
-        backgroundColor = themeData.colorScheme.surface;
-        break;
+    Color? backgroundColor = widget.backgroundColor;
+    final accentColor = widget.accentColor ?? themeData.colorScheme.secondary;
+
+    if (backgroundColor == null) {
+      switch (themeData.brightness) {
+        case Brightness.light:
+          backgroundColor = Colors.grey[200];
+          break;
+        case Brightness.dark:
+          backgroundColor = themeData.colorScheme.surface;
+          break;
+      }
     }
 
     final theme = Theme.of(context);
@@ -460,7 +470,7 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
                   // selectedValue: selectedDialValue,
                   labels: _buildBaseUnitLabels(theme.textTheme, Size(constraints.maxWidth, constraints.maxHeight)),
                   backgroundColor: backgroundColor,
-                  accentColor: themeData.colorScheme.secondary,
+                  accentColor: accentColor,
                   theta: _getThetaForDuration(widget.duration, widget.baseUnitDenomination),
                   textDirection: Directionality.of(context),
                   textHelper: textHelper,
