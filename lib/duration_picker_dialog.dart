@@ -6,10 +6,6 @@ import 'package:duration_picker/dial/dial.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
-
-
-
-
 /// A duration picker designed to appear inside a popup dialog.
 ///
 /// Pass this widget to [showDialog]. The value returned by [showDialog] is the
@@ -17,7 +13,8 @@ import 'package:flutter/semantics.dart';
 /// taps the "CANCEL" button. The selected time is reported by calling
 /// [Navigator.pop].
 class DurationPickerDialog extends StatefulWidget {
-final  Function? onChangeCallback;
+  final Function? onChangeCallback;
+
   /// Creates a duration picker.
   ///
   /// [initialTime] must not be null.
@@ -28,8 +25,9 @@ final  Function? onChangeCallback;
     this.decoration,
     this.upperBound,
     this.lowerBound,
-    this.title='Duration',
+    this.title = 'Duration',
     this.screenScaling = 1.0,
+    this.themeOverride,
     required this.onChangeCallback,
   }) : super(key: key);
 
@@ -41,6 +39,7 @@ final  Function? onChangeCallback;
   final Duration? lowerBound;
   final String title;
   final double screenScaling;
+  final ThemeData? themeOverride;
 
   @override
   DurationPickerDialogState createState() => DurationPickerDialogState();
@@ -51,7 +50,6 @@ class DurationPickerDialogState extends State<DurationPickerDialog> {
   void initState() {
     super.initState();
     _selectedDuration = widget.initialTime;
-
   }
 
   @override
@@ -65,20 +63,20 @@ class DurationPickerDialogState extends State<DurationPickerDialog> {
 
   late MaterialLocalizations localizations;
 
-void _handleTimeChanged(Duration value) {
-  setState(() {
-    _selectedDuration = value;
-    if (widget.onChangeCallback != null) {
-      try {
-        widget.onChangeCallback!(value);
-      } catch (e) {
-        print('Error in onChangeCallback: $e');
+  void _handleTimeChanged(Duration value) {
+    setState(() {
+      _selectedDuration = value;
+      if (widget.onChangeCallback != null) {
+        try {
+          widget.onChangeCallback!(value);
+        } catch (e) {
+          print('Error in onChangeCallback: $e');
+        }
+      } else {
+        print('onChangeCallback is null');
       }
-    } else {
-      print('onChangeCallback is null');
-    }
-  });
-}
+    });
+  }
 
   void _handleCancel() {
     Navigator.pop(context);
@@ -90,9 +88,8 @@ void _handleTimeChanged(Duration value) {
 
   @override
   Widget build(BuildContext context) {
-
     assert(debugCheckHasMediaQuery(context));
-    final theme = Theme.of(context);
+    final theme = widget.themeOverride ?? Theme.of(context);
     final boxDecoration = widget.decoration ?? BoxDecoration(color: theme.dialogBackgroundColor);
     final Widget picker = Padding(
       padding: const EdgeInsets.all(16.0),
@@ -100,7 +97,7 @@ void _handleTimeChanged(Duration value) {
         children: [
           if (widget.title != null)
             // Text(widget.title!, style: theme.textTheme.headlineSmall),
-             ExcludeSemantics(child: Text(widget.title!, style: theme.textTheme.headlineSmall)),
+            ExcludeSemantics(child: Text(widget.title!, style: theme.textTheme.headlineSmall)),
           Expanded(
             child: AspectRatio(
               aspectRatio: 1.0,
@@ -217,13 +214,14 @@ void _handleTimeChanged(Duration value) {
 Future<Duration?> showDurationPicker({
   required BuildContext context,
   required Duration initialTime,
-  String title='Duration',
+  String title = 'Duration',
   BaseUnit baseUnit = BaseUnit.minute,
   BoxDecoration? decoration,
   Duration? upperBound,
   Duration? lowerBound,
   double screenScaling = 1.0,
- Function? onChangeCallback,
+  Function? onChangeCallback,
+  ThemeData? themeOveride,
 }) async {
   return showDialog<Duration>(
     context: context,
@@ -235,7 +233,7 @@ Future<Duration?> showDurationPicker({
         upperBound: upperBound,
         lowerBound: lowerBound,
         screenScaling: screenScaling,
+        themeOverride: themeOveride,
         onChangeCallback: onChangeCallback),
   );
 }
-

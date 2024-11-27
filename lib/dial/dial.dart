@@ -27,6 +27,7 @@ class Dial extends StatefulWidget {
       this.onChangeCallback,
       this.backgroundColor,
       this.accentColor,
+      this.themeOverride,
       required this.title});
 
   final Duration duration;
@@ -35,6 +36,7 @@ class Dial extends StatefulWidget {
   final Duration? upperBound;
   final Duration? lowerBound;
   final String title;
+  final ThemeData? themeOverride;
 
   @override
   DialState createState() => DialState();
@@ -368,7 +370,7 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
       }
     }
 
-    final theme = Theme.of(context);
+    final theme = widget.themeOverride ?? Theme.of(context);
 
     // int? selectedDialValue;
     _higherOrderUnitValue = _higherOrderUnitHand();
