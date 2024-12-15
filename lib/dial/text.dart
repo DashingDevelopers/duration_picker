@@ -66,7 +66,7 @@ class TextHelper {
   // Draw the Text in the center of the circle which displays the duration string
   get higherOrderUnits => higherOrder(higherOrderUnitValue);
 
-  String higherOrder(houv) {
+  String higherOrder(int houv) {
     return (houv == 0) ? '' : '${houv}${getHigherOrderUnitString()} ';
   }
 
@@ -74,7 +74,7 @@ class TextHelper {
     return base(baseUnitValue);
   }
 
-  String base(buv) => '${buv}${getBaseUnitString()}';
+  String base(int buv) => '${buv.toString().padLeft(2,'0')}${getBaseUnitString()}';
 
   String get durationString => '$higherOrderUnits$baseUnits';
 
