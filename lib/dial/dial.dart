@@ -304,7 +304,7 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
   List<TextPainter> _buildBaseUnitLabels(TextTheme textTheme, Size size) {
     var fontSizeBase = 12;
     // var fontSizeBase = 0.045;
-    print(' size.shortestSide ${ size.shortestSide}' );
+    // print(' size.shortestSide ${ size.shortestSide}' );
     final style =
         textTheme.titleMedium!.copyWith(fontSize:  fontSizeBase * MediaQuery.of(context).textScaleFactor);
     // fontSize: size.shortestSide * 0.07
