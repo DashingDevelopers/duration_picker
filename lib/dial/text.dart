@@ -74,7 +74,7 @@ class TextHelper {
     return base(baseUnitValue);
   }
 
-  String base(int buv) => '${buv.toString().padLeft(2,'0')}${getBaseUnitString()}';
+  String base(int buv) => '${buv.toString().padLeft(2,' ')}${getBaseUnitString()}';
 
   String get durationString => '$higherOrderUnits$baseUnits';
 
