@@ -25,7 +25,6 @@ class MyApp extends StatelessWidget {
       showSemanticsDebugger: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
-
       ),
       home: const MyHomePage(title: 'Duration Picker Demo'),
     );
@@ -42,10 +41,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Duration _durationMillisClock = const Duration(milliseconds: 1000);
-  Duration _durationSecondsClock = const Duration(seconds: 60);
-  Duration _durationMinutesClock = const Duration(minutes: 60);
-  Duration _durationHoursClock = const Duration(hours: 24);
+  Duration _durationMillisClock = const Duration(milliseconds: 1000 + 400);
+  Duration _durationSecondsClock = const Duration(seconds: 60 * 30 + 40);
+  Duration _durationMinutesClock = const Duration(minutes: 60 * 30 + 20);
+  Duration _durationHoursClock = const Duration(hours: 36);
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +120,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: DurationPicker(
                   duration: _durationHoursClock,
                   baseUnit: BaseUnit.hour,
-
                   onChange: (val) {
                     setState(() => _durationHoursClock = val);
                   },
@@ -147,12 +145,10 @@ class _MyHomePageState extends State<MyHomePage> {
               baseUnit: BaseUnit.second,
               upperBound: const Duration(seconds: 60),
               lowerBound: const Duration(seconds: 10),
-              screenScaling: 1.5,//largeText
+              screenScaling: 1.5, //largeText
               onChangeCallback: (Duration val) {
                 print('onChangeCallback: $val');
               },
-
-
             );
             if (!context.mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
