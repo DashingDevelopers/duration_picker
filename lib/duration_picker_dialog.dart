@@ -138,7 +138,13 @@ class DurationPickerDialogState extends State<DurationPickerDialog> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Expanded(
-                  child: picker,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: SizedBox(
+                        width: 250*MediaQuery.of(context).textScaleFactor,
+                        height: 250*MediaQuery.of(context).textScaleFactor,
+                        child: picker),
+                  ),
                 ), // picker grows and shrinks with the available space
                 actions,
               ],

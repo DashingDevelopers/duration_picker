@@ -41,6 +41,8 @@ class DialPainter extends CustomPainter {
     const epsilon = .001;
     const sweep = kTwoPi - epsilon;
     const startAngle = -math.pi / 2.0;
+    final durationBaseSize = 20;
+
 
     //PR reduce radius to enclose the handle shape
     final radius = (size.shortestSide / 2.0) - 20;
@@ -76,8 +78,8 @@ class DialPainter extends CustomPainter {
     // Draw the handle that is used to drag and to indicate the position around the circle
     final handlePaint = Paint()..color = accentColor;
     //PR center the handle against new outer ring size
-    final handlePoint = getOffsetForTheta(theta, radius - 5.0);
-    canvas.drawCircle(handlePoint, 20.0, handlePaint);
+    final handlePoint = getOffsetForTheta(theta, radius - 5.0*MediaQuery.of(context).textScaleFactor);
+    canvas.drawCircle(handlePoint, 13.0*MediaQuery.of(context).textScaleFactor, handlePaint);
 
     final textDurationValuePainter = TextPainter(
       textAlign: TextAlign.center,
@@ -87,7 +89,7 @@ class DialPainter extends CustomPainter {
             .textTheme
             .bodyMedium!
             //PR shrink font as circle is now smaller
-            .copyWith(fontSize: size.shortestSide * 0.07 * MediaQuery.of(context).textScaleFactor),
+            .copyWith(fontSize:  durationBaseSize * MediaQuery.of(context).textScaleFactor),
       ),
       textDirection: textDirection, //TextDirection.ltr,
     )..layout();
