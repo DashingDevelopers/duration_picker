@@ -41,9 +41,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Duration _durationMillisClock = const Duration(milliseconds: 1000 + 400);
-  Duration _durationSecondsClock = const Duration(seconds: 60 * 30 + 40);
-  Duration _durationMinutesClock = const Duration(minutes: 60 * 30 + 20);
+  Duration _durationMillisClock = const Duration(milliseconds: 1000 + 250);
+  Duration _durationSecondsClock = const Duration(seconds: 60 * 30 + 45);
+  Duration _durationMinutesClock = const Duration(minutes: 60 * 30 + 10);
   Duration _durationHoursClock = const Duration(hours: 36);
 
   @override

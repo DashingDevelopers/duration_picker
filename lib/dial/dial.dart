@@ -53,19 +53,15 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
       duration: kDialAnimateDuration,
       vsync: this,
     );
+    var begin = _getThetaForDuration(widget.duration, widget.baseUnitDenomination) < 3 ? kPiByTwo : kPiByTwo + kTwoPi;
     _thetaTween = Tween<double>(
-      begin: _getThetaForDuration(Duration.zero, widget.baseUnitDenomination),
-      // begin: _getThetaForDuration(widget.duration, widget.baseUnitDenomination),
-      // begin: 0,
-      // end: 0,
+      begin: begin,
       end: _getThetaForDuration(widget.duration, widget.baseUnitDenomination),
     );
 
     _theta = _thetaTween.animate(
       CurvedAnimation(parent: _thetaController, curve: Curves.fastOutSlowIn),
-    )..addListener(() => setState(() {
-          print('_theta.value: ${_theta.value}');
-        }));
+    )..addListener(() => setState(() {}));
     _thetaController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         _higherOrderUnitValue = _higherOrderUnitHand();
@@ -76,6 +72,7 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
     _thetaController.forward();
 
     _turningAngle = kPiByTwo - _turningAngleFactor(null) * kTwoPi;
+    print('_turningAngle: $_turningAngle');
     _higherOrderUnitValue = _higherOrderUnitHand();
     _baseUnitValue = _baseUnitHand();
 
