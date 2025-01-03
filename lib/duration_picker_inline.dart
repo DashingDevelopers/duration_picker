@@ -18,6 +18,7 @@ class DurationPicker extends StatelessWidget {
 
   final Color? backgroundColor;
   final Color? accentColor;
+  final Duration? animationDelay;
 
   const DurationPicker({
     Key? key,
@@ -30,6 +31,7 @@ class DurationPicker extends StatelessWidget {
     this.height,
     this.backgroundColor,
     this.accentColor,
+    this.animationDelay = Duration.zero,
     @Deprecated('This value was never used') this.snapToMins,
   }) : super(key: key);
 
@@ -53,6 +55,7 @@ class DurationPicker extends StatelessWidget {
               upperBound: upperBound,
               lowerBound: lowerBound,
               title: 'Duration',
+              animationDelay: animationDelay!,
             ),
           ),
         ],

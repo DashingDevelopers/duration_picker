@@ -28,6 +28,7 @@ class Dial extends StatefulWidget {
       this.backgroundColor,
       this.accentColor,
       this.themeOverride,
+      this.animationDelay = Duration.zero,
       required this.title});
 
   final Duration duration;
@@ -37,6 +38,8 @@ class Dial extends StatefulWidget {
   final Duration? lowerBound;
   final String title;
   final ThemeData? themeOverride;
+
+  final Duration animationDelay;
 
   @override
   DialState createState() => DialState();
@@ -50,10 +53,16 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _thetaController = AnimationController(
-      duration: kDialAnimateDuration,
+      duration: Duration(milliseconds: 700),
       vsync: this,
     );
-    var begin = _getThetaForDuration(widget.duration, widget.baseUnitDenomination) < 3 ? kPiByTwo : kPiByTwo + kTwoPi;
+    print('widget.duration: ${widget.duration} widget.baseUnitDenomination: ${widget.baseUnitDenomination}');
+    print(
+        '_getThetaForDuration(widget.duration, widget.baseUnitDenomination): ${_getThetaForDuration(widget.duration, widget.baseUnitDenomination)}');
+    print('kPiByTwo : $kPiByTwo, kTwoPi: $kTwoPi');
+
+    var begin =
+        _getThetaForDuration(widget.duration, widget.baseUnitDenomination) <= kPiByTwo ? kPiByTwo : kPiByTwo + kTwoPi;
     _thetaTween = Tween<double>(
       begin: begin,
       end: _getThetaForDuration(widget.duration, widget.baseUnitDenomination),
@@ -66,13 +75,13 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
       if (status == AnimationStatus.completed) {
         _higherOrderUnitValue = _higherOrderUnitHand();
         _baseUnitValue = _baseUnitHand();
+        _thetaController.duration = kDialAnimateDuration;
         setState(() {});
       }
     });
-    _thetaController.forward();
+    Future.delayed(widget.animationDelay, () => _thetaController.forward());
 
     _turningAngle = kPiByTwo - _turningAngleFactor(null) * kTwoPi;
-    print('_turningAngle: $_turningAngle');
     _higherOrderUnitValue = _higherOrderUnitHand();
     _baseUnitValue = _baseUnitHand();
 
@@ -309,8 +318,7 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
     var fontSizeBase = 12;
     // var fontSizeBase = 0.045;
     // print(' size.shortestSide ${ size.shortestSide}' );
-    final style =
-        textTheme.titleMedium!.copyWith(fontSize:  fontSizeBase * MediaQuery.of(context).textScaleFactor);
+    final style = textTheme.titleMedium!.copyWith(fontSize: fontSizeBase * MediaQuery.of(context).textScaleFactor);
     // fontSize: size.shortestSide * 0.07
     var baseUnitMarkerValues = <Duration>[];
 

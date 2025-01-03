@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-const Duration kDialAnimateDuration = Duration(milliseconds: 700);
+const Duration kDialAnimateDuration = Duration(milliseconds: 200);
 
 const double kDurationPickerWidthPortrait = 328.0;
 const double kDurationPickerWidthLandscape = 512.0;

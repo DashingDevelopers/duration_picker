@@ -42,9 +42,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Duration _durationMillisClock = const Duration(milliseconds: 1000 + 250);
-  Duration _durationSecondsClock = const Duration(seconds: 60 * 30 + 45);
-  Duration _durationMinutesClock = const Duration(minutes: 60 * 30 + 10);
-  Duration _durationHoursClock = const Duration(hours: 36);
+  Duration _durationSecondsClock = const Duration(seconds: 60 * 30 + 46);
+  Duration _durationMinutesClock = const Duration(minutes: 59);
+  Duration _durationHoursClock = const Duration(hours: 0);
 
   @override
   Widget build(BuildContext context) {
