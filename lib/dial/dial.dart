@@ -56,10 +56,10 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
       duration: Duration(milliseconds: 700),
       vsync: this,
     );
-    print('widget.duration: ${widget.duration} widget.baseUnitDenomination: ${widget.baseUnitDenomination}');
-    print(
-        '_getThetaForDuration(widget.duration, widget.baseUnitDenomination): ${_getThetaForDuration(widget.duration, widget.baseUnitDenomination)}');
-    print('kPiByTwo : $kPiByTwo, kTwoPi: $kTwoPi');
+    // print('widget.duration: ${widget.duration} widget.baseUnitDenomination: ${widget.baseUnitDenomination}');
+    // print(
+    //     '_getThetaForDuration(widget.duration, widget.baseUnitDenomination): ${_getThetaForDuration(widget.duration, widget.baseUnitDenomination)}');
+    // print('kPiByTwo : $kPiByTwo, kTwoPi: $kTwoPi');
 
     var begin =
         _getThetaForDuration(widget.duration, widget.baseUnitDenomination) <= kPiByTwo ? kPiByTwo : kPiByTwo + kTwoPi;
