@@ -375,7 +375,7 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
 
       // Adaptive threshold: one step (or slightly more) of the current base unit in radians.
       // This avoids a magic `0.1` that misclassifies ~14min as the 15min wrap.
-      final baseUnitSteps = widget.baseUnitDenomination.getBaseUnitToSecondaryUnitFactor();
+      final baseUnitSteps = _getBaseUnitToSecondaryUnitFactor(widget.baseUnit);
       final thetaPerBaseUnit = _kTwoPi / baseUnitSteps;
       final signChangeAllowance = thetaPerBaseUnit * 1.25; // tweak factor as needed
 
