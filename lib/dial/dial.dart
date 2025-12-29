@@ -164,14 +164,26 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
   void _updateThetaForPan() {
     setState(() {
       final offset = _position! - _center!;
-      final angle = (math.atan2(offset.dx, offset.dy) - kPiByTwo) % kTwoPi;
+      final rawAngle = math.atan2(offset.dx, offset.dy);
+      final angle = (rawAngle - kPiByTwo) % kTwoPi;
+
+      // Adaptive threshold: one step (or slightly more) of the current base unit in radians.
+      // This avoids a magic `0.1` that misclassifies ~14min as the 15min wrap.
+      final baseUnitSteps = widget.baseUnitDenomination.getBaseUnitToSecondaryUnitFactor();
+      final thetaPerBaseUnit = kTwoPi / baseUnitSteps;
+      final signChangeAllowance = thetaPerBaseUnit * 1.25; // tweak factor as needed
 
       // Stop accidental abrupt pans from making the dial seem like it starts from 1h.
-      // (happens when wanting to pan from 0 clockwise, but when doing so quickly, one actually pans from before 0 (e.g. setting the duration to 59mins, and then crossing 0, which would then mean 1h 1min).
-      if (angle >= kCircleTop &&
+      // (happens when wanting to pan from 0 clockwise, but when doing so quickly, one actually pans from before 0 ...)
+      final shouldStopAbruptPan = angle >= kCircleTop &&
           _theta.value <= kCircleTop &&
-          _theta.value >= 0.1 && // to allow the radians sign change at 15mins.
-          _higherOrderUnitValue == 0) return;
+          _theta.value >= signChangeAllowance &&
+          _higherOrderUnitValue == 0;
+
+      // print(
+      //     'signChangeAllowance $signChangeAllowance rawAngle $rawAngle, angle: $angle, _theta.value: ${_theta.value}, shouldStopAbruptPan: $shouldStopAbruptPan');
+
+      if (shouldStopAbruptPan) return;
 
       _thetaTween
         ..begin = angle
