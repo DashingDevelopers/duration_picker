@@ -76,7 +76,8 @@ class DialPainter extends CustomPainter {
 
     // Get the offset point for an angle value of theta, and a distance of _radius
     Offset getOffsetForTheta(double theta, double radius) {
-      return center + Offset(radius * math.cos(theta), -radius * math.sin(theta));
+      return center +
+          Offset(radius * math.cos(theta), -radius * math.sin(theta));
     }
 
     // Draw the handle that is used to drag and to indicate the position around the circle
@@ -117,14 +118,19 @@ class DialPainter extends CustomPainter {
     }
 
     // Draw the Text in the center of the circle which displays the duration string
-    final secondaryUnits = (baseUnitMultiplier == 0) ? '' : '$baseUnitMultiplier${getSecondaryUnitString()} ';
+    final secondaryUnits = (baseUnitMultiplier == 0)
+        ? ''
+        : '$baseUnitMultiplier${getSecondaryUnitString()} ';
     final baseUnits = '$baseUnitHand';
 
     final textDurationValuePainter = TextPainter(
       textAlign: TextAlign.center,
       text: TextSpan(
         text: '$secondaryUnits$baseUnits',
-        style: Theme.of(context).textTheme.displayMedium!.copyWith(fontSize: size.shortestSide * 0.15),
+        style: Theme.of(context)
+            .textTheme
+            .displayMedium!
+            .copyWith(fontSize: size.shortestSide * 0.15),
       ),
       textDirection: TextDirection.ltr,
     )..layout();
@@ -146,7 +152,9 @@ class DialPainter extends CustomPainter {
       canvas,
       Offset(
         centerPoint.dx - (textMinPainter.width / 2),
-        centerPoint.dy + (textDurationValuePainter.height / 2) - textMinPainter.height / 2,
+        centerPoint.dy +
+            (textDurationValuePainter.height / 2) -
+            textMinPainter.height / 2,
       ),
     );
 
@@ -247,8 +255,12 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
     _secondaryUnitValue = _secondaryUnitHand();
     _baseUnitValue = _baseUnitHand();
 
-    _upperBoundAngle = widget.upperBound != null ? _kPiByTwo - _turningAngleFactor(widget.upperBound) * _kTwoPi : null;
-    _lowerBoundAngel = widget.lowerBound != null ? _kPiByTwo - _turningAngleFactor(widget.lowerBound) * _kTwoPi : null;
+    _upperBoundAngle = widget.upperBound != null
+        ? _kPiByTwo - _turningAngleFactor(widget.upperBound) * _kTwoPi
+        : null;
+    _lowerBoundAngel = widget.lowerBound != null
+        ? _kPiByTwo - _turningAngleFactor(widget.lowerBound) * _kTwoPi
+        : null;
   }
 
   late ThemeData themeData;
@@ -285,7 +297,8 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
 
   void _animateTo(double targetTheta) {
     final currentTheta = _theta.value;
-    var beginTheta = _nearest(targetTheta, currentTheta, currentTheta + _kTwoPi);
+    var beginTheta =
+        _nearest(targetTheta, currentTheta, currentTheta + _kTwoPi);
     beginTheta = _nearest(targetTheta, beginTheta, currentTheta - _kTwoPi);
     _thetaTween
       ..begin = beginTheta
@@ -342,9 +355,14 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
 
   double _getThetaForDuration(Duration duration, BaseUnit baseUnit) {
     final int baseUnits = _getDurationInBaseUnits(duration, baseUnit);
-    final int baseToSecondaryFactor = _getBaseUnitToSecondaryUnitFactor(baseUnit);
+    final int baseToSecondaryFactor =
+        _getBaseUnitToSecondaryUnitFactor(baseUnit);
 
-    return (_kPiByTwo - (baseUnits % baseToSecondaryFactor) / baseToSecondaryFactor.toDouble() * _kTwoPi) % _kTwoPi;
+    return (_kPiByTwo -
+            (baseUnits % baseToSecondaryFactor) /
+                baseToSecondaryFactor.toDouble() *
+                _kTwoPi) %
+        _kTwoPi;
   }
 
   double _turningAngleFactor(Duration? duration) {
@@ -377,7 +395,8 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
       // This avoids a magic `0.1` that misclassifies ~14min as the 15min wrap.
       final baseUnitSteps = _getBaseUnitToSecondaryUnitFactor(widget.baseUnit);
       final thetaPerBaseUnit = _kTwoPi / baseUnitSteps;
-      final signChangeAllowance = thetaPerBaseUnit * 1.25; // tweak factor as needed
+      final signChangeAllowance =
+          thetaPerBaseUnit * 1.25; // tweak factor as needed
       // 1.25 is a simple safety/hysteresis multiplier: it expands the dead-zone around the wrap boundary to 125% of
       // one base-unit step so small/frequent pans or floating-point noise don't trigger an unwanted wrap-around.
 
@@ -511,7 +530,9 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
     final dialAngle = _kPiByTwo - angle;
 
     // Turn dial angle into base units (may go beyond one secondary unit for multiple turns)
-    final value = dialAngle / _kTwoPi * _getBaseUnitToSecondaryUnitFactor(widget.baseUnit);
+    final value = dialAngle /
+        _kTwoPi *
+        _getBaseUnitToSecondaryUnitFactor(widget.baseUnit);
 
     // Prevent negative base-unit values which lead to negative Duration when dragging fast past 0.
     return value < 0.0 ? 0.0 : value;
@@ -610,7 +631,8 @@ class _DialState extends State<_Dial> with SingleTickerProviderStateMixin {
         const int interval = 3;
         const int factor = Duration.hoursPerDay;
         const int length = factor ~/ interval;
-        baseUnitMarkerValues = List.generate(length, (index) => Duration(hours: index * interval));
+        baseUnitMarkerValues =
+            List.generate(length, (index) => Duration(hours: index * interval));
         break;
     }
 
@@ -733,7 +755,8 @@ class DurationPickerDialogState extends State<DurationPickerDialog> {
   Widget build(BuildContext context) {
     assert(debugCheckHasMediaQuery(context));
     final theme = Theme.of(context);
-    final boxDecoration = widget.decoration ?? BoxDecoration(color: theme.dialogBackgroundColor);
+    final boxDecoration =
+        widget.decoration ?? BoxDecoration(color: theme.dialogBackgroundColor);
     final Widget picker = Padding(
       padding: const EdgeInsets.all(16.0),
       child: AspectRatio(
