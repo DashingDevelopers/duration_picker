@@ -152,10 +152,21 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
   }
 
   Duration _notifyOnChangedIfNeeded() {
-    // if (widget.onChangeCallback != null) widget.onChangeCallback!();
+    // update visible hands first
     _higherOrderUnitValue = _higherOrderUnitHand();
     _baseUnitValue = _baseUnitHand();
-    final d = _angleToDuration(_turningAngle);
+
+    // compute duration from current turning angle
+    var d = _angleToDuration(_turningAngle);
+
+    // Safety: if a very-fast drag produced a negative Duration, snap to zero/top
+    if (d.inMicroseconds < 0) {
+      _turningAngle = kPiByTwo; // maps to zero duration
+      _higherOrderUnitValue = 0;
+      _baseUnitValue = 0;
+      d = _angleToDuration(_turningAngle);
+    }
+
     widget.onChanged(d);
 
     return d;
@@ -173,11 +184,44 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
       final thetaPerBaseUnit = kTwoPi / baseUnitSteps;
       final signChangeAllowance = thetaPerBaseUnit * 1.25; // tweak factor as needed
 
+      // 1.25 is a simple safety/hysteresis multiplier: it expands the dead-zone around the wrap boundary to 125% of
+      // one base-unit step so small/frequent pans or floating-point noise don't trigger an unwanted wrap-around.
+
+      // helper: shortest signed angular difference a - b in [-pi, pi]
+      double _shortestDiff(double a, double b) {
+        var diff = (a - b) % kTwoPi;
+        if (diff > math.pi) diff -= kTwoPi;
+        return diff;
+      }
+
+      // Compute dial angle and fractional base-unit value for the pointer position.
+      final dialAngle = (kPiByTwo - angle) % kTwoPi;
+      final pointerBaseUnitValue = dialAngle / kTwoPi * baseUnitSteps;
+
+      // If pointer is very close to zero (less than half a base-unit) and we're at zero secondary units,
+      // snap to exact zero to avoid residual 1-second (or 1-minute) values.
+      const double snapThreshold = 0.5; // half a base-unit
+      if (pointerBaseUnitValue <= snapThreshold && _higherOrderUnitValue == 0) {
+        // Force dial to exact top and ensure turning angle maps to zero duration.
+        _thetaTween
+          ..begin = kCircleTop
+          ..end = kCircleTop;
+
+        // Ensure internal turning angle maps to zero duration (safety for immediate reads).
+        _turningAngle = kPiByTwo;
+        return;
+      }
+
       // Stop accidental abrupt pans from making the dial seem like it starts from 1h.
       // (happens when wanting to pan from 0 clockwise, but when doing so quickly, one actually pans from before 0 ...)
+      // absolute angular distance from current dial position to the top (wrap boundary)
+      final currentToTop = _shortestDiff(_theta.value, kCircleTop).abs();
+
+      // detect a crossing of the top but only block it when the current dial
+      // is within the allowance around the top and we are at zero secondary units.
       final shouldStopAbruptPan = angle >= kCircleTop &&
           _theta.value <= kCircleTop &&
-          _theta.value >= signChangeAllowance &&
+          currentToTop <= signChangeAllowance &&
           _higherOrderUnitValue == 0;
 
       // print(
@@ -272,8 +316,11 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
     // Coordinate transformation from mathematical COS to dial COS
     final dialAngle = kPiByTwo - angle;
 
-    // Turn dial angle into minutes, may go beyond 60 minutes (multiple turns)
-    return dialAngle / kTwoPi * widget.baseUnitDenomination.getBaseUnitToSecondaryUnitFactor();
+    // Turn dial angle into base units (may go beyond one secondary unit for multiple turns)
+    final value = dialAngle / kTwoPi * widget.baseUnitDenomination.getBaseUnitToSecondaryUnitFactor();
+
+    // Prevent negative base-unit values which lead to negative Duration when dragging fast past 0.
+    return value < 0.0 ? 0.0 : value;
   }
 
   void _updateTurningAngle(double oldTheta, double newTheta) {
@@ -299,6 +346,13 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
       _turningAngle = _upperBoundAngle!;
     } else if (_lowerBoundAngel != null && _turningAngle > _lowerBoundAngel!) {
       _turningAngle = _lowerBoundAngel!;
+    }
+
+    // Additional safety: the mapping to Duration expects dialAngle >= 0.
+    // That corresponds to _turningAngle <= _kPiByTwo. Clamp to avoid negative Durations
+    // when the user drags very fast past the zero boundary.
+    if (_turningAngle > kPiByTwo) {
+      _turningAngle = kPiByTwo;
     }
   }
 
