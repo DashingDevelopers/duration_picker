@@ -11,7 +11,7 @@ enum BaseUnit {
 
   // Converts the duration to the chosen secondary unit. For example, for base unit minutes, this gets the number
   // of hours in the duration
-  int getDurationInHigherOrderUnits(Duration duration) {
+  int getDurationInSecondaryUnits(Duration duration) {
     switch (this) {
       case BaseUnit.millisecond:
         return duration.inSeconds;
@@ -54,8 +54,8 @@ enum BaseUnit {
     }
   }
 
-  int higherOrderUnitHand(Duration duration) {
-    return this.getDurationInHigherOrderUnits(duration);
+  int secondaryUnitHand(Duration duration) {
+    return this.getDurationInSecondaryUnits(duration);
   }
 
   int baseUnitHand(Duration duration) {

@@ -260,7 +260,7 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
   }
 
   int _higherOrderUnitHand() {
-    return widget.baseUnitDenomination.higherOrderUnitHand(widget.duration);
+    return widget.baseUnitDenomination.secondaryUnitHand(widget.duration);
   }
 
   int _baseUnitHand() {
@@ -478,11 +478,11 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
         final canIncrease = (widget.upperBound == null || incValue < widget.upperBound!);
 
         if (canIncrease) {
-          final houv = widget.baseUnitDenomination.higherOrderUnitHand(incValue);
+          final houv = widget.baseUnitDenomination.secondaryUnitHand(incValue);
           final buv = widget.baseUnitDenomination.baseUnitHand(incValue);
           incTalk = textHelper.getDurationString(houv, buv);
         } else {
-          final houv = widget.baseUnitDenomination.higherOrderUnitHand(widget.upperBound!);
+          final houv = widget.baseUnitDenomination.secondaryUnitHand(widget.upperBound!);
           final buv = widget.baseUnitDenomination.baseUnitHand(widget.upperBound!);
           incTalk = 'Cannot increase beyond ${textHelper.getDurationString(houv, buv)}';
         }
@@ -492,11 +492,11 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
         late String decTalk;
 
         if (canDecrease) {
-          final houv = widget.baseUnitDenomination.higherOrderUnitHand(decValue);
+          final houv = widget.baseUnitDenomination.secondaryUnitHand(decValue);
           final bov = widget.baseUnitDenomination.baseUnitHand(decValue);
           decTalk = textHelper.getDurationString(houv, bov);
         } else {
-          final houv = widget.baseUnitDenomination.higherOrderUnitHand(widget.lowerBound!);
+          final houv = widget.baseUnitDenomination.secondaryUnitHand(widget.lowerBound!);
           final bov = widget.baseUnitDenomination.baseUnitHand(widget.lowerBound!);
           decTalk = 'Cannot decrease beyond ${textHelper.getDurationString(houv, bov)}';
         }
