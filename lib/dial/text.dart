@@ -74,15 +74,13 @@ class TextHelper {
     return base(baseUnitValue);
   }
 
-  String base(int buv) => '${buv.toString().padLeft(2,' ')}${getBaseUnitString()}';
+  String base(int buv) => '${buv.toString().padLeft(2, ' ')}${getBaseUnitString()}';
 
   String get durationString => '$higherOrderUnits$baseUnits';
 
-  String getDurationString(houv,bov) {
+  String getDurationString(int houv, int bov) {
     return '${higherOrder(houv)}${base(bov)}';
   }
-
-
 }
 
 /// The [DurationPicker] widget.
