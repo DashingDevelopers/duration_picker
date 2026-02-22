@@ -79,8 +79,11 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
         setState(() {});
       }
     });
-    Future.delayed(widget.animationDelay, () => _thetaController.forward());
-
+    Future.delayed(widget.animationDelay, () {
+      if (mounted) {
+        _thetaController.forward();
+      }
+    });
     _turningAngle = kPiByTwo - _turningAngleFactor(null) * kTwoPi;
     _higherOrderUnitValue = _higherOrderUnitHand();
     _baseUnitValue = _baseUnitHand();
