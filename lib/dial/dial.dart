@@ -203,8 +203,14 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
 
       // If pointer is very close to zero (less than half a base-unit) and we're at zero secondary units,
       // snap to exact zero to avoid residual 1-second (or 1-minute) values.
+      // We also require the base-unit hand to be in the first half of the dial
+      // (e.g. 0-29 min) so that approaching the top from the second half
+      // (e.g. 55-59 min, completing a full revolution) is NOT mistaken for
+      // being near zero.
       const double snapThreshold = 0.5; // half a base-unit
-      if (pointerBaseUnitValue <= snapThreshold && _higherOrderUnitValue == 0) {
+      if (pointerBaseUnitValue <= snapThreshold &&
+          _higherOrderUnitValue == 0 &&
+          _baseUnitValue < baseUnitSteps ~/ 2) {
         // Force dial to exact top and ensure turning angle maps to zero duration.
         _thetaTween
           ..begin = kCircleTop
@@ -221,11 +227,14 @@ class DialState extends State<Dial> with SingleTickerProviderStateMixin {
       final currentToTop = _shortestDiff(_theta.value, kCircleTop).abs();
 
       // detect a crossing of the top but only block it when the current dial
-      // is within the allowance around the top and we are at zero secondary units.
+      // is within the allowance around the top and we are at zero secondary units,
+      // AND the base-unit hand is in the first half of the dial (genuinely near
+      // zero, not about to complete a revolution).
       final shouldStopAbruptPan = angle >= kCircleTop &&
           _theta.value <= kCircleTop &&
           currentToTop <= signChangeAllowance &&
-          _higherOrderUnitValue == 0;
+          _higherOrderUnitValue == 0 &&
+          _baseUnitValue < baseUnitSteps ~/ 2;
 
       // print(
       //     'signChangeAllowance $signChangeAllowance rawAngle $rawAngle, angle: $angle, _theta.value: ${_theta.value}, shouldStopAbruptPan: $shouldStopAbruptPan');
